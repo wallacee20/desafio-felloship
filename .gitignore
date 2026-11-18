@@ -1,2 +1,6 @@
 .env
-/ETL
+brutos/
+__pycache__/
+.venv/
+.pytest_cache/
+notebooks/
