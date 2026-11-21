@@ -1,0 +1,17 @@
+
+# Manipulação de dados
+pandas
+
+# Conexão com PostgreSQL
+SQLAlchemy
+psycopg2-binary
+
+# Variáveis de ambiente
+python-dotenv
+
+# Requisições HTTP e APIs
+requests
+
+# Testes automatizados
+pytest
+

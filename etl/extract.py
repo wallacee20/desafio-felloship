@@ -1,6 +1,11 @@
 import requests
 import json
 
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+DADOS_BRUTOS = ROOT_DIR / "dados-brutos"
+
 api_url = "http://127.0.0.1:8000"
 
 #
@@ -40,27 +45,24 @@ def extrair_paginado(endpoint: str, page_size: int = 200) -> tuple[list[dict], i
         itens.extend(pagina["items"])
     return itens, total_paginas
 
-# Extração dos dados de clientes da API.
-clientes, paginas_clientes = extrair_paginado("clientes")
-print(
-    f"extracao: clientes paginas={paginas_clientes} "
-    f"registros={len(clientes)}"
-)
 
-# Extração dos dados de pedidos da API.
-pedidos, paginas_pedidos = extrair_paginado("pedidos")
-print(
-    f"extracao: pedidos paginas={paginas_pedidos} "
-    f"registros_brutos={len(pedidos)}"
-)   
+def executar_extracao():
 
-# Escrita dos dados extraídos em arquivos JSON na pasta dados-brutos.
-with open("../dados-brutos/clientes.json", "w", encoding="utf-8") as f:
-   json.dump(clientes, f, ensure_ascii=False)
-   print("clientes.json salvo com sucesso!")
-# Escrita dos dados extraídos em arquivos JSON na pasta dados-brutos.
-with open("../dados-brutos/pedidos.json", "w", encoding="utf-8") as f:
-    json.dump(pedidos, f, ensure_ascii=False)
-    print("pedidos.json salvo com sucesso!")
+    clientes, paginas_clientes = extrair_paginado("clientes")
+    pedidos, paginas_pedidos = extrair_paginado("pedidos")
 
+    DADOS_BRUTOS.mkdir(parents=True, exist_ok=True)
 
+    # Escrita dos dados extraídos em arquivos JSON na pasta dados-brutos.
+    with open(DADOS_BRUTOS / "clientes.json", "w", encoding="utf-8") as f:
+        json.dump(clientes, f, ensure_ascii=False)
+    
+    with open(DADOS_BRUTOS / "pedidos.json", "w", encoding="utf-8") as f:
+        json.dump(pedidos, f, ensure_ascii=False)
+
+    return {    
+         "clientes": len(clientes),
+         "pedidos": len(pedidos),
+         "paginas_clientes": paginas_clientes,
+         "paginas_pedidos": paginas_pedidos
+         }

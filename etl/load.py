@@ -1,110 +1,112 @@
+def executar_carga():
+    
+    import os
+    import pandas as pd
+    import psycopg2
 
-import os
-import pandas as pd
-import psycopg2
+    from sqlalchemy.dialects.postgresql import insert
+    from sqlalchemy import create_engine, URL, text
+    from dotenv import load_dotenv
 
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy import create_engine, URL, text
-from dotenv import load_dotenv
+    from pathlib import Path
 
-# Carregando variáveis de ambiente.
-load_dotenv()
+    # Diretório raiz do projeto
+    ROOT_DIR = Path(__file__).resolve().parents[1]
 
-# Configurações de conexão com PostgreSQL.
+    # Diretório dos dados tratados
+    DADOS_TRATADOS = ROOT_DIR / "dados-tratados"
 
-load_dotenv(override=True)
+    # Carregando variáveis de ambiente.
+    load_dotenv()
 
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = int(os.getenv("DB_PORT"))
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+    # Configurações de conexão com PostgreSQL.
 
-connection_url = URL.create(
-    drivername="postgresql+psycopg2",
-    username=DB_USER,
-    password=DB_PASSWORD,
-    host=DB_HOST,
-    port=DB_PORT,
-    database=DB_NAME
-)
+    load_dotenv(override=True)
 
-engine = create_engine(connection_url)
+    DB_HOST = os.getenv("DB_HOST")
+    DB_PORT = int(os.getenv("DB_PORT"))
+    DB_NAME = os.getenv("DB_NAME")
+    DB_USER = os.getenv("DB_USER")
+    DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-with engine.connect() as connection:
-    result = connection.execute(
-        text("SELECT version(), current_database()")
+    connection_url = URL.create(
+        drivername="postgresql+psycopg2",
+        username=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME
     )
 
-    print(result.fetchone())
+    engine = create_engine(connection_url)
 
 
 # --------------------------------------------------
 #  Configuração de caminhos dos arquivos CSV.
 # --------------------------------------------------
 
-#  Leitura dos arquivos tratados.
-df_produtos = pd.read_csv("../dados-tratados/produtos.csv")
-df_clientes = pd.read_csv("../dados-tratados/clientes.csv")
-df_pedidos = pd.read_csv("../dados-tratados/pedidos.csv")
-df_itens = pd.read_csv("../dados-tratados/itens_pedido.csv")
+    df_produtos = pd.read_csv(DADOS_TRATADOS / "produtos.csv")
+    df_clientes = pd.read_csv(DADOS_TRATADOS / "clientes.csv")
+    df_pedidos = pd.read_csv(DADOS_TRATADOS / "pedidos.csv")
+    df_itens = pd.read_csv(DADOS_TRATADOS / "itens_pedido.csv")
 
-# Carga dos produtos.
+    # Carga dos produtos.
 
-def inserir_sem_duplicar(pd_table, conn, keys, data_iter):
-    dados = [dict(zip(keys, row)) for row in data_iter]
+    def inserir_sem_duplicar(pd_table, conn, keys, data_iter):
+        dados = [dict(zip(keys, row)) for row in data_iter]
 
-    if not dados:
-        return 0
+        if not dados:
+            return 0
 
-    comando = insert(pd_table.table).values(dados)
-    comando = comando.on_conflict_do_nothing()
+        comando = insert(pd_table.table).values(dados)
+        comando = comando.on_conflict_do_nothing()
 
-    resultado = conn.execute(comando)
+        resultado = conn.execute(comando)
 
-    return resultado.rowcount
-# Carga dos produtos.
+        return resultado.rowcount
+    # Carga dos produtos.
 
-df_produtos.to_sql(
-    "produtos",
-    engine,
-    if_exists="append",
-    index=False,
-    method=inserir_sem_duplicar
-)
-
-print(f"CARGA: produtos={len(df_produtos)}")
+    df_produtos.to_sql(
+        "produtos",
+        engine,
+        if_exists="append",
+        index=False,
+        method=inserir_sem_duplicar
+    )
 
 
-# Inserção dos clientes.
-df_clientes.to_sql(
-    "clientes",
-    engine,
-    if_exists="append",
-    index=False,
-    method=inserir_sem_duplicar
-)
+    # Inserção dos clientes.
+    df_clientes.to_sql(
+        "clientes",
+        engine,
+        if_exists="append",
+        index=False,
+        method=inserir_sem_duplicar
+    )
 
-print(f"CARGA: clientes={len(df_clientes)}")
+    # 6. Inserção dos pedidos.
+    df_pedidos.to_sql(
+        "pedidos",
+        engine,
+        if_exists="append",
+        index=False,
+        method=inserir_sem_duplicar
+    )
 
-# 6. Inserção dos pedidos.
-df_pedidos.to_sql(
-    "pedidos",
-    engine,
-    if_exists="append",
-    index=False,
-    method=inserir_sem_duplicar
-)
-
-print(f"CARGA: pedidos={len(df_pedidos)}")
-
-# 7. Inserção dos itens dos pedidos.
-df_itens.to_sql(
-    "itens_pedido",
-    engine,
-    if_exists="append",
-    index=False,
-    method=inserir_sem_duplicar,
-    chunksize=500
-)
-print(f"CARGA: itens={len(df_itens)}")
+    # 7. Inserção dos itens dos pedidos.
+    df_itens.to_sql(
+        "itens_pedido",
+        engine,
+        if_exists="append",
+        index=False,
+        method=inserir_sem_duplicar,
+        chunksize=500
+    )
+    
+    
+    return {
+        "produtos": len(df_produtos),
+        "clientes": len(df_clientes),
+        "pedidos": len(df_pedidos),
+        "itens": len(df_itens)
+    }

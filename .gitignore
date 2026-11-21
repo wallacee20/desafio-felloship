@@ -1,6 +1,8 @@
+# Ambiente e credenciais
 .env
-brutos/
+
+# Python
 __pycache__/
 .venv/
 .pytest_cache/
-notebooks/
+.ipynb_checkpoints/
