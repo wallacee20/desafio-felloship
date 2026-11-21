@@ -66,37 +66,31 @@ def executar_transformacao():
     # 4. CONVERSÃO DAS DATAS
 #  ============================================================================================= #
 
-    datas_originais = df_pedidos["data_pedido"].copy()
-
-    df_pedidos["data_pedido"] = pd.to_datetime(
-        df_pedidos["data_pedido"],
-        format="mixed",
-        dayfirst=True
+    df_pedidos["data_pedido"] = (
+    df_pedidos["data_pedido"]
+    .apply(converter_data)
     )
 
     datas_convertidas = int(
-        datas_originais.str.contains("/", na=False).sum()
-    )
+    df_pedidos["data_pedido"].notna().sum()
+)
 
 #  ============================================================================================= #
     # 5. CONVERSÃO DOS VALORES MONETÁRIOS
 #  ============================================================================================= #
 
-    df_pedidos["valor_total"] = pd.to_numeric(
-        df_pedidos["valor_total"]
-        .astype(str)
-        .str.replace(",", ".", regex=False),
-        errors="coerce"
-    ).round(2)
+    df_pedidos["valor_total"] = (
+    df_pedidos["valor_total"]
+    .apply(converter_valor)
+    )
 
 #  ============================================================================================= #
     # 6. REMOÇÃO DE PEDIDOS DUPLICADOS
 #  ============================================================================================= #
 
-    pedidos_unicos = df_pedidos.drop_duplicates(
-        subset="id",
-        keep="first"
-    ).copy()
+    pedidos_unicos, repetidos_descartados = (
+    remover_pedidos_duplicados(df_pedidos)
+    )
 
     total_pedidos = len(df_pedidos)
     total_pedidos_unicos = len(pedidos_unicos)
@@ -145,6 +139,8 @@ def executar_transformacao():
         soma_valor_itens_origem - soma_valor_itens_destino,
         2
     )
+    
+    reconciliacao_aprovada = bool(abs(diferenca) <= 0.01)
 
 #  ============================================================================================= #
     # 9. CÁLCULO DO TOTAL DOS ITENS POR PEDIDO
@@ -238,5 +234,39 @@ def executar_transformacao():
             float(soma_valor_itens_destino), 2
         ),
         "diferenca": round(float(diferenca), 2)
+        ,
+        "reconciliacao_aprovada": reconciliacao_aprovada
     }
     return resultado
+
+
+# funções para Tests
+
+def converter_valor(valor):
+    valor_convertido = pd.to_numeric(
+        str(valor).replace(",", "."),
+        errors="coerce"
+    )
+
+    return round(valor_convertido, 2) if pd.notna(valor_convertido) else float("nan")
+
+def converter_data(valor):
+    return pd.to_datetime(
+        valor,
+        format="mixed",
+        dayfirst=True,
+        errors="coerce"
+    )
+
+def remover_pedidos_duplicados(df_pedidos):
+
+    pedidos_unicos = df_pedidos.drop_duplicates(
+        subset="id",
+        keep="first"
+    ).copy()
+
+    repetidos_descartados = (
+        len(df_pedidos) - len(pedidos_unicos)
+    )
+
+    return pedidos_unicos, repetidos_descartados
