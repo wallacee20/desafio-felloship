@@ -4,19 +4,48 @@ Registro do uso de IA no Desafio Final (ETL Verdejar)
 
 - Ferramenta usada: **[]**
 
-- O que fiz sozinho, sem IA: **[]**
+- O que fiz sozinho, sem IA:
+**Desenvolvimento, estruturação do projeto e organização dos diretórios.
+
+
+Execução e acompanhamento do pipeline.
+
+
+
+Análise de erros no VS Code.
+
+
+
+Execução dos testes e interpretação dos resultados.
+
+
+
+Execução das consultas SQL no PostgreSQL.
+
+
+
+Verificação dos resultados da reconciliação.**
 
 ---
 
 ## 1. Sugestões aceitas
 
-### 1.1 [título]
+### 1.1 Reconciliação dos valores dos itens
 
 - **Tarefa delegada:**
+  Orientação para verificar se os valores calculados na origem correspondiam aos valores persistidos no destino.
+
 - **Trecho pedido:**
+  Comparação entre a soma de quantidade × preço unitário na origem e no destino.
+  
 - **Decisão e justificativa:**
+  Implementou a reconciliação com tolerância de um centavo
+
 - **Como validei:**
+  Executei a transformação e verificou a diferença entre os valores.
+
 - **Retrabalho:**
+  N/A
 
 ### 1.2 [Ptítulo]
 

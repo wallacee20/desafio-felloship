@@ -1,4 +1,3 @@
-
 -- Total de vendas por mês
 SELECT
     DATE_TRUNC('month', data_pedido) AS mes,
@@ -6,6 +5,7 @@ SELECT
 FROM pedidos
 GROUP BY 1
 ORDER BY 1;
+
 
 -- Quantidade de pedidos por estado
 SELECT
@@ -16,6 +16,7 @@ JOIN clientes c
     ON p.cliente_id = c.id
 GROUP BY c.estado
 ORDER BY quantidade_pedidos DESC;
+
 
 -- Pedidos divergentes
 SELECT
@@ -32,12 +33,10 @@ HAVING ABS(
 ) > 0.01;
 
 
-
 -- Total geral de vendas
 SELECT
     SUM(valor_total) AS total_geral
 FROM pedidos;
-
 
 
 -- reconciliação
