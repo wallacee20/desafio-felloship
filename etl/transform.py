@@ -13,6 +13,54 @@ DADOS_TRATADOS = ROOT_DIR / "dados-tratados"
 INSUMOS_DADOS = ROOT_DIR / "insumos" / "dados"
 
 #  ============================================================================================= #
+#  ============= Funções de Transformação. ===================================================== #
+#  ============================================================================================= #
+
+def tratar_email(cliente):  # Trata e-mails nulos dos clientes.
+        cliente = cliente.copy()
+        if pd.isna(cliente["email"]):
+            cliente["email"] = None
+        return cliente
+
+def padronizar_estado(cliente):  # Padroniza os estados, removendo espaços e convertendo para maiúsculas.
+    cliente = cliente.copy()
+
+    cliente["estado"] = (
+        str(cliente["estado"]).strip().upper()
+    )
+
+    return cliente
+
+def converter_valor(valor):  # Converte valores monetários para números com duas casas decimais.
+    valor_convertido = pd.to_numeric(
+        str(valor).replace(",", "."),
+        errors="coerce"
+    )
+
+    return round(valor_convertido, 2) if pd.notna(valor_convertido) else float("nan")
+
+def converter_data(valor):  # Converte valores para o formato de data.
+    return pd.to_datetime(
+        valor,
+        format="mixed",
+        dayfirst=True,
+        errors="coerce"
+    )
+
+def remover_pedidos_duplicados(df_pedidos):   # Remove pedidos duplicados, mantendo a primeira ocorrência.
+
+    pedidos_unicos = df_pedidos.drop_duplicates(
+        subset="id",
+        keep="first"
+    ).copy()
+
+    repetidos_descartados = (
+        len(df_pedidos) - len(pedidos_unicos)
+    )
+
+    return pedidos_unicos, repetidos_descartados
+
+#  ============================================================================================= #
 #  ============= Leitura dos arquivos JSON e CSV na pasta dados-brutos. ======================== #
 #  ============================================================================================= #
 
@@ -36,10 +84,7 @@ def executar_transformacao():
 #  ============= TRATAMENTO DE E-MAILS NULOS 
 #  ============================================================================================= #
 
-    df_clientes["email"] = df_clientes["email"].where(
-        df_clientes["email"].notna(), None
-    )
-
+    df_clientes = df_clientes.apply(tratar_email, axis=1)
     email_nulos = int(df_clientes["email"].isna().sum())
 
 #  ============================================================================================= #
@@ -48,17 +93,15 @@ def executar_transformacao():
 
     estados_originais = df_clientes["estado"].copy()
 
-    df_clientes["estado"] = (
-        df_clientes["estado"]
-        .astype("string")
-        .str.strip()
-        .str.upper()
+    df_clientes = df_clientes.apply(
+        padronizar_estado,
+        axis=1
     )
 
     estados_padronizados = int(
         (
             estados_originais.astype("string")
-            != df_clientes["estado"]
+            != df_clientes["estado"].astype("string")
         ).sum()
     )
 
@@ -240,33 +283,3 @@ def executar_transformacao():
     return resultado
 
 
-# funções para Tests
-
-def converter_valor(valor):
-    valor_convertido = pd.to_numeric(
-        str(valor).replace(",", "."),
-        errors="coerce"
-    )
-
-    return round(valor_convertido, 2) if pd.notna(valor_convertido) else float("nan")
-
-def converter_data(valor):
-    return pd.to_datetime(
-        valor,
-        format="mixed",
-        dayfirst=True,
-        errors="coerce"
-    )
-
-def remover_pedidos_duplicados(df_pedidos):
-
-    pedidos_unicos = df_pedidos.drop_duplicates(
-        subset="id",
-        keep="first"
-    ).copy()
-
-    repetidos_descartados = (
-        len(df_pedidos) - len(pedidos_unicos)
-    )
-
-    return pedidos_unicos, repetidos_descartados

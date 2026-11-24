@@ -2,7 +2,7 @@
 
 Registro do uso de IA no Desafio Final (ETL Verdejar)
 
-- Ferramenta usada: **[]**
+- Ferramenta usada: **Claude.ai**
 
 - O que fiz sozinho, sem IA:
 **Desenvolvimento, estruturação do projeto e organização dos diretórios.
@@ -30,7 +30,7 @@ Verificação dos resultados da reconciliação.**
 
 ## 1. Sugestões aceitas
 
-### 1.1 Reconciliação dos valores dos itens
+### Reconciliação dos valores dos itens
 
 - **Tarefa delegada:**
   Orientação para verificar se os valores calculados na origem correspondiam aos valores persistidos no destino.
@@ -47,40 +47,23 @@ Verificação dos resultados da reconciliação.**
 - **Retrabalho:**
   N/A
 
-### 1.2 [Ptítulo]
-
-- **Tarefa delegada:**
-- **Trecho pedido:**
-- **Decisão e justificativa:**
-- **Como validei:**
-- **Retrabalho:**
-
----
 
 ## 2. Sugestões rejeitadas
 
 
-### 2.1 [título]
+### Cálculo do total dos itens dos pedidos
 
-- **Tarefa delegada:**
-- **O que a IA propôs:**
-- **Por que estava inadequada (com evidência):**
-- **O que fiz no lugar:**
-- **Como validei:**
-
-### 2.2 [título]
-
-- **Tarefa delegada:**
-- **O que a IA propôs:**
-- **Por que estava inadequada (com evidência):**
-- **O que fiz no lugar:**
-- **Como validei:**
+- **Tarefa delegada:** Calcular o valor total dos itens de cada pedido.
+- **O que a IA propôs:** Adicionar uma coluna total diretamente ao DataFrame df_itens.
+- **Por que estava inadequada (com evidência):** Essa alteração poderia gerar incompatibilidade na etapa de carga, pois a tabela itens_pedido do banco não possui essa coluna no schema.sql.
+- **O que fiz no lugar:** Criei uma cópia do DataFrame para adicionar a coluna total, utilizando-a apenas nos cálculos de reconciliação, sem alterar a estrutura dos dados destinados à carga.
+- **Como validei:** Executei a transformação e conferi os valores calculados, preservando a estrutura esperada pelo banco de dados.
 
 ---
 
 ## 3. Falhas e retrabalho
 
-### 3.1 Chaves estrangeiras invertidas na conversão do brModelo (rascunho: reescrever com minhas palavras)
+### Chaves estrangeiras invertidas na conversão do brModelo (rascunho: reescrever com minhas palavras)
 
 - **Contexto:** Pedi para validar a modelagem modelagem do banco que eu estava modelando no brModelo.
 
@@ -97,3 +80,11 @@ Verificação dos resultados da reconciliação.**
 - **Retrabalho:** apaguei as colunas erradas, recriei as chaves estrangeiras nas tabelas
   filhas e corrigi os tipos (`cliente_id` estava como VARCHAR).
 
+
+## 4. Conclusão
+
+O uso da IA foi importante durante o desenvolvimento do desafio, principalmente para esclarecer conceitos, analisar problemas e apoiar a implementação das etapas do ETL. Porém, procurei compreender cada sugestão antes de aplicá-la, avaliando sua compatibilidade com a estrutura do projeto e o contrato de dados.
+
+Também optei por não aceitar sugestões que poderiam comprometer etapas posteriores, como a carga no banco de dados. Esse processo reforçou a importância de testar, validar e entender o código produzido.
+
+Mais do que utilizar a IA para escrever código, busquei utilizá-la como uma ferramenta de aprendizado, mantendo a responsabilidade pelas decisões técnicas e pela qualidade da solução desenvolvida.
