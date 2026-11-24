@@ -436,16 +436,21 @@ Os resultados representam números observados durante o desenvolvimento. A evid�
 
 ## Autor
 
-**Wallace Almeida**
+<div align="center">
 
-Projeto desenvolvido como parte do programa **AI/R Fellowship ---
-AI-Driven Data Engineering**.
+# Wallace Almeida
 
--   GitHub: [wallacee20](https://github.com/wallacee20)
--   Repositório:
-    [desafio-felloship](https://github.com/wallacee20/desafio-felloship)
+### Data Engineer | Cloud Engineer Jr.
+
+Engenharia de Dados • Python • SQL • Databricks • GCP
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Perfil-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/wallace-almeida-amaral/)
+
+</div>
+
+Estudante de Tecnologia em Internet das Coisas e profissional de Tecnologia da Informação, com foco em Engenharia de Dados e Cloud Computing.
 
 ------------------------------------------------------------------------
 
-*Projeto desenvolvido com foco em aprendizado prático de Engenharia de
+*Projeto desenvolvido no programa AI/R Fellowship | AI-Driven Data Engineering com foco em aprendizado prático de Engenharia de
 Dados, qualidade, integridade e confiabilidade dos dados.*
