@@ -1,4 +1,4 @@
-# 🌱 ETL Verdejar --- AI-Driven Data Engineering
+# ETL Verdejar --- AI-Driven Data Engineering
 
 Projeto desenvolvido como Desafio Final do programa **AI/R Fellowship
 --- AI-Driven Data Engineering**. O objetivo é construir um processo ETL
@@ -6,7 +6,7 @@ para integrar dados de clientes, pedidos e produtos, tratar problemas de
 qualidade, carregar as informações no PostgreSQL e validar a integridade
 dos dados.
 
-## 📌 Sumário
+## Sumário
 
 -   [Sobre o projeto](#-sobre-o-projeto)
 -   [Arquitetura](#-arquitetura)
@@ -22,7 +22,7 @@ dos dados.
 -   [Resultados](#-resultados-e-validações)
 -   [Documentação complementar](#-documentação-complementar)
 
-## 🎯 Sobre o projeto
+## Sobre o projeto
 
 A Verdejar é uma loja virtual fictícia do segmento de hortifrúti. Os
 dados de clientes e pedidos são disponibilizados por uma API REST local,
@@ -32,7 +32,7 @@ O desafio consiste em extrair, transformar e carregar esses dados em um
 banco relacional, garantindo qualidade, consistência, integridade
 referencial e possibilidade de reprocessamento.
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 O projeto segue o padrão ETL (*Extract, Transform, Load*).
 
@@ -53,7 +53,7 @@ flowchart TD
 transformação e padronização → gravação dos CSVs tratados → carga no
 PostgreSQL → validação.
 
-## 🛠️ Tecnologias
+## Tecnologias
 
   Tecnologia      Aplicação
   --------------- ---------------------------------------
@@ -68,7 +68,7 @@ PostgreSQL → validação.
   Python-dotenv   Variáveis de ambiente
   Git e GitHub    Versionamento
 
-## 📂 Estrutura do projeto
+## Estrutura do projeto
 
 ``` text
 desafio-fellowship/
@@ -101,7 +101,7 @@ Os arquivos de ambiente, dados temporários e notebooks de
 desenvolvimento são mantidos fora do versionamento conforme as regras do
 `.gitignore`.
 
-## 📥 Etapa 1 --- Extração
+## Etapa 1 --- Extração
 
 A extração consome os dados disponibilizados pela API Verdejar e obtém o
 catálogo de produtos.
@@ -120,38 +120,23 @@ Os dados extraídos são preservados em arquivos JSON na pasta
 `dados-brutos/`. Essa estratégia permite reprocessar os dados sem
 consultar novamente a API.
 
-## 🔄 Etapa 2 --- Transformação
+## Etapa 2 --- Transformação
 
 A transformação é realizada em `etl/transform.py`, utilizando Pandas e
 funções específicas para tratar os problemas de qualidade.
 
+
 ### Tratamento das armadilhas A1 a A6
 
-  -----------------------------------------------------------------------
-  Código                  Problema                Tratamento
-  ----------------------- ----------------------- -----------------------
-  A1                      E-mails ausentes        Preservar o cliente e
-                                                  manter o e-mail como
-                                                  nulo
+| Código | Problema | Tratamento |
+|:---:|---|---|
+| A1 | E-mails ausentes | Preservar o cliente e manter o e-mail como nulo |
+| A2 | Estados em formatos diferentes | Padronizar as siglas para maiúsculas |
+| A3 | Datas em formatos diferentes | Converter para o formato de data esperado pelo banco |
+| A4 | Valores com vírgula decimal | Converter para valores numéricos |
+| A5 | Pedidos repetidos | Remover duplicidades pelo identificador do pedido |
+| A6 | Divergência entre valor do pedido e soma dos itens | Calcular `valor_itens` e identificar pedidos divergentes |
 
-  A2                      Estados em formatos     Padronizar as siglas
-                          diferentes              para maiúsculas
-
-  A3                      Datas em formatos       Converter para o
-                          diferentes              formato de data
-                                                  esperado pelo banco
-
-  A4                      Valores com vírgula     Converter para valores
-                          decimal                 numéricos
-
-  A5                      Pedidos repetidos       Remover duplicidades
-                                                  pelo identificador do
-                                                  pedido
-
-  A6                      Divergência entre valor Calcular `valor_itens`
-                          do pedido e soma dos    e identificar pedidos
-                          itens                   divergentes
-  -----------------------------------------------------------------------
 
 ### Normalização dos itens
 
@@ -172,28 +157,23 @@ e pedidos divergentes.
 
 Os dados tratados são gravados em CSV na pasta `dados-tratados/`.
 
-## 📑 Contrato de dados
-
-O arquivo `CONTRATO_DE_DADOS.md` documenta os campos, tipos,
-obrigatoriedade, regras de nulidade e transformações aplicadas.
 
 O modelo relacional possui quatro tabelas:
 
-  Tabela           Finalidade
-  ---------------- --------------------------------------
-  `clientes`       Dados cadastrais dos clientes
-  `produtos`       Catálogo de produtos
-  `pedidos`        Pedidos e indicadores de divergência
-  `itens_pedido`   Produtos associados a cada pedido
+| Tabela | Finalidade |
+|---|---|
+| `clientes` | Dados cadastrais dos clientes |
+| `produtos` | Catálogo de produtos |
+| `pedidos` | Pedidos e indicadores de divergência |
+| `itens_pedido` | Produtos associados a cada pedido |
 
-As tabelas utilizam chaves primárias e estrangeiras para garantir a
-integridade referencial. A tabela `itens_pedido` possui chave primária
-composta por `pedido_id` e `linha`.
+As tabelas utilizam chaves primárias e estrangeiras para garantir a integridade referencial. A tabela `itens_pedido` possui chave primária composta por `pedido_id` e `linha`.
+
 
 Consulte [CONTRATO_DE_DADOS.md](CONTRATO_DE_DADOS.md) para visualizar o
 dicionário completo.
 
-## 🗄️ Etapa 3 --- Carga no PostgreSQL
+## Etapa 3 --- Carga no PostgreSQL
 
 A carga é implementada em `etl/load.py`, utilizando Pandas, SQLAlchemy e
 Psycopg2. A conexão é configurada por variáveis de ambiente, evitando
@@ -221,7 +201,7 @@ não duplica registros já existentes.
 atualiza os dados existentes. Alterações em registros com o mesmo
 identificador não são refletidas automaticamente no destino.
 
-## 🧪 Etapa 4 --- Testes e reconciliação
+## Etapa 4 --- Testes e reconciliação
 
 Os testes automatizados são implementados com Pytest e organizados na
 pasta `tests/`. Eles verificam se as funções de transformação produzem
@@ -264,34 +244,57 @@ pytest
 **Resultado do Pytest:** atualizar com a saída real da execução final,
 incluindo a quantidade de testes aprovados e eventuais falhas.
 
-## 🚀 Stretch --- Orquestração local
+## Stretch --- Fluxo de Orquestração
 
-Como melhoria adicional, foi desenvolvida uma estrutura de orquestração
-local em Python para executar o processo ETL por meio de um único
+Como melhoria adicional, foi desenvolvida uma estrutura de orquestração para executar o processo ETL por meio de um único
 comando.
+O processo é coordenado pelo `pipeline.py`, que executa sequencialmente as etapas de extração, transformação e carga.
+
+
+
+
+```mermaid
+flowchart TB
+    A["run.py<br/>Ponto de entrada"] --> B["pipeline.py<br/>Orquestração"]
+
+    B --> C["Extract<br/>Extração"]
+    B --> D["Transform<br/>Transformação"]
+    B --> E["Load<br/>Carga"]
+
+    E --> F[("PostgreSQL<br/>Banco de dados")]
+
+    style A fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style B fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style C fill:#0f766e,color:#fff,stroke:#115e59
+    style D fill:#0f766e,color:#fff,stroke:#115e59
+    style E fill:#0f766e,color:#fff,stroke:#115e59
+    style F fill:#15803d,color:#fff,stroke:#166534
+```
+
+
+### `run.py`
+
+É o ponto de entrada da aplicação. Responsável por configurar o logging, iniciar o pipeline, apresentar o resumo final e tratar exceções durante a execução.
+
+### `etl/pipeline.py`
+
+Coordena sequencialmente as etapas de extração, transformação e carga, reunindo as métricas em um resultado consolidado.
+
+Execute o processo completo com:
+
+```bash
+python run.py
+```
 
 ### `run.py`
 
 É o ponto de entrada da aplicação. Responsável por configurar o logging,
 iniciar o pipeline, apresentar o resumo final e registrar/tratar
 exceções durante a execução.
-
-### `etl/pipeline.py`
-
-Coordena sequencialmente as etapas de extração, transformação e carga,
-reunindo as métricas em um resultado consolidado.
-
-Execute o processo completo com:
-
-``` bash
-python run.py
-```
-
 Essa implementação facilita a execução, manutenção e organização do
-processo. O Stretch corresponde à orquestração local em Python, não à
-implementação de Docker Compose.
+processo.
 
-## ⚙️ Configuração do ambiente
+## Configuração do ambiente
 
 ### 1. Clonar o repositório
 
@@ -356,7 +359,7 @@ http://127.0.0.1:8000
 A rota `/saude` pode ser utilizada para verificar se o serviço está
 respondendo.
 
-## ▶️ Como executar o projeto
+## Como executar o projeto
 
 Com o ambiente virtual ativado, a API em execução e o PostgreSQL
 preparado, execute na raiz:
@@ -377,45 +380,45 @@ Para executar somente os testes:
 pytest
 ```
 
-## 📊 Resultados e validações
+## Resultados e validações
 
 Resultados observados durante o desenvolvimento:
 
-  Indicador                         Resultado observado
-  ------------------------------- ---------------------
-  Clientes extraídos                              1.000
-  Produtos                                           12
-  Pedidos brutos                                  5.100
-  Pedidos únicos                                  5.000
-  Pedidos repetidos descartados                     100
-  Itens dos pedidos                              12.455
-  E-mails nulos                                      81
-  Estados padronizados                              151
-  Pedidos divergentes                               238
+### Indicadores da transformação
+
+| Indicador | Resultado observado |
+|:---|---:|
+| Clientes extraídos | 1.000 |
+| Produtos | 12 |
+| Pedidos brutos | 5.100 |
+| Pedidos únicos | 5.000 |
+| Pedidos repetidos descartados | 100 |
+| Itens dos pedidos | 12.455 |
+| E-mails nulos | 81 |
+| Estados padronizados | 151 |
+| Pedidos divergentes | 238 |
 
 ### Reconciliação dos valores
 
-  Indicador                              Valor
-  --------------------------- ----------------
-  Soma dos itens na origem      R\$ 311.228,75
-  Soma dos itens no destino     R\$ 311.228,75
-  Diferença                           R\$ 0,00
+| Indicador | Valor |
+|:---|---:|
+| Soma dos itens na origem | R$ 311.228,75 |
+| Soma dos itens no destino | R$ 311.228,75 |
+| Diferença | R$ 0,00 |
 
-Os resultados representam números observados durante o desenvolvimento.
-A evidência definitiva deve ser conferida na execução final do pipeline
-e na reconciliação após a carga.
+**Resultado:** os valores da origem e do destino apresentaram diferença de R$ 0,00, atendendo à reconciliação realizada durante a transformação.
+
+Os resultados representam números observados durante o desenvolvimento. A evidência definitiva deve ser conferida na execução final do pipeline e na reconciliação após a carga.
 
 ### Evidências complementares
 
--   Código de extração e transformação.
--   Contrato de dados.
--   Código de carga e estratégia de idempotência.
--   Testes automatizados.
--   Consultas SQL de validação.
--   Registro do uso de IA.
--   Histórico de commits e Pull Request.
+- Código de extração e transformação.
+- Contrato de dados.
+- Testes automatizados com pytest.
+- Consultas SQL de validação.
+- Resultados da execução do ETL.
 
-## 📚 Documentação complementar
+## Documentação complementar
 
   ----------------------------------------------------------------------------------------------------
   Arquivo                                                          Descrição
@@ -431,7 +434,7 @@ e na reconciliação após a carga.
   [tests/consultas_validacao.sql](tests/consultas_validacao.sql)   Consultas SQL de validação
   ----------------------------------------------------------------------------------------------------
 
-## 👨‍💻 Autor
+## Autor
 
 **Wallace Almeida**
 
