@@ -1,2 +1,14 @@
+# Ambiente e credenciais
 .env
-/ETL
+
+# Python
+__pycache__/
+.venv/
+.pytest_cache/
+
+
+# Notebooks
+notebooks/
+
+# Docs
+/ENTREGA.md
