@@ -10,7 +10,7 @@ from etl.transform import converter_data
 def test_valor_com_virgula_vira_numero():
     assert converter_valor("125,84") == 125.84
 
-# Define a função de teste para verificar se o valor numérico permanece inalterado
+# Define a função de teste para verificar se o valor numérico p
 def test_valor_numerico_permanece():
     assert converter_valor(94.34) == 94.34
 

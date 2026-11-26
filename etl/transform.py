@@ -26,7 +26,7 @@ def padronizar_estado(cliente):  # Padroniza os estados, removendo espaços e co
     cliente = cliente.copy()
 
     cliente["estado"] = (
-        str(cliente["estado"]).strip().upper()
+        str(cliente["estado"]).upper()
     )
 
     return cliente
