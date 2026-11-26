@@ -9,3 +9,6 @@ __pycache__/
 
 # Notebooks
 notebooks/
+
+# Docs
+/ENTREGA.md
