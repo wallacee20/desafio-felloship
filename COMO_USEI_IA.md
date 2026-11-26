@@ -5,26 +5,28 @@ Registro do uso de IA no Desafio Final (ETL Verdejar)
 - Ferramenta usada: **Claude.ai**
 
 - O que fiz sozinho, sem IA:
-**Desenvolvimento, estruturação do projeto e organização dos diretórios.
+<b>
+
+> Desenvolvimento, estruturação do projeto e organização dos diretórios.
 
 
-Execução e acompanhamento do pipeline.
-
-
-
-Análise de erros no VS Code.
-
-
-
-Execução dos testes e interpretação dos resultados.
+> Execução e acompanhamento do pipeline.
 
 
 
-Execução das consultas SQL no PostgreSQL.
+> Análise de erros no VS Code.
 
 
 
-Verificação dos resultados da reconciliação.**
+> Execução dos testes e interpretação dos resultados.
+
+
+
+> Execução das consultas SQL no PostgreSQL.
+
+
+
+> Verificação dos resultados da reconciliação.**
 
 ---
 
