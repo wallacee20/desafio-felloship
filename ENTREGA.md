@@ -44,223 +44,91 @@ resultados no PostgreSQL, os testes e as verificações de reconciliação.
 
 ## 5. Registro de uso de Inteligência Artificial
 
-### 5.1 Contexto
+Registro do uso de IA no Desafio Final (ETL Verdejar)
 
-Durante o desenvolvimento do ETL Verdejar, utilizei o ChatGPT como
-ferramenta de apoio e par de programação com escopo limitado, conforme
-as orientações do desafio.
+- Ferramenta usada: **Claude.ai**
 
-A IA auxiliou na compreensão dos requisitos, na organização de funções
-específicas, na elaboração de testes e na investigação de erros. As
-tarefas foram delimitadas por funcionalidade, como conversão de valores
-monetários, remoção de pedidos duplicados, validação das regras de
-transformação e implementação da carga no PostgreSQL.
+- O que fiz sozinho, sem IA:
+**Desenvolvimento, estruturação do projeto e organização dos diretórios.
 
-Fiquei responsável por executar os comandos, analisar os resultados,
-corrigir problemas e decidir quais sugestões aceitar, adaptar ou
-rejeitar. O desenvolvimento foi realizado progressivamente, validando
-cada etapa antes de avançar.
 
-### 5.2 Sugestões aceitas
+Execução e acompanhamento do pipeline.
 
-  -----------------------------------------------------------------------
-  Sugestão                            Justificativa e validação
-  ----------------------------------- -----------------------------------
-  Utilizar `Decimal` para valores     Aceitei `Decimal` para tratar
-  monetários                          valores monetários e reduzir
-                                      problemas de precisão. Validei os
-                                      resultados com os testes e a
-                                      reconciliação financeira, cuja
-                                      diferença final foi de R\$ 0,00.
 
-  Criar testes automatizados com      Os testes permitiram verificar as
-  `pytest`                            regras de transformação e a geração
-                                      do relatório de qualidade.
 
-  Utilizar `ON CONFLICT DO NOTHING`   O teste com
-  na carga                            `to_sql(..., if_exists="append")`
-                                      apresentou conflito de chave
-                                      primária na segunda execução.
-                                      Adotei `ON CONFLICT DO NOTHING`
-                                      para ignorar registros cuja chave
-                                      já existe. Validei a estratégia
-                                      reexecutando a carga e conferindo
-                                      as quantidades no PostgreSQL.
+Análise de erros no VS Code.
 
-  Separar regras de transformação em  A separação das regras A1--A6
-  funções e módulos                   facilitou a organização e a
-                                      validação. As alterações foram
-                                      verificadas com testes e execução
-                                      do ETL.
 
-  Gerar um relatório de qualidade     Aceitei um módulo próprio para
-                                      gerar relatório por execução, com
-                                      data, hora e contadores A1--A6.
-                                      Validei com dados fictícios e
-                                      reais.
-  -----------------------------------------------------------------------
 
-### 5.3 Sugestões rejeitadas ou adaptadas
+Execução dos testes e interpretação dos resultados.
 
-  -----------------------------------------------------------------------
-  Sugestão                            Motivo da decisão
-  ----------------------------------- -----------------------------------
-  Adiar a separação das funções de    Adaptei a recomendação e organizei
-  transformação                       as regras antes da entrega para
-                                      facilitar leitura, testes e
-                                      manutenção.
 
-  Criar um arquivo separado apenas    Rejeitei o arquivo adicional e
-  para testar A6                      mantive a validação permanente em
-                                      `tests/test_transformacao.py`.
 
-  Utilizar apenas                     A reexecução demonstrou erro de
-  `to_sql(..., if_exists="append")`   chave primária duplicada; adaptei a
-                                      carga para
-                                      `ON CONFLICT DO NOTHING`.
+Execução das consultas SQL no PostgreSQL.
 
-  Repetir um comando sem investigar a Conferi a estrutura dos arquivos e
-  falha                               o ambiente antes de repetir
-                                      comandos, buscando corrigir a causa
-                                      do problema.
-  -----------------------------------------------------------------------
 
-### 5.4 Falhas e retrabalho
 
-#### Extração da API
+Verificação dos resultados da reconciliação.**
 
-A extração precisou ser revisada para tratar falhas de conexão e
-respostas HTTP inválidas. Foram verificadas uma conexão recusada e uma
-rota inexistente, que retornou HTTP 404.
+---
 
-#### Consulta SQL no pgAdmin
+## 1. Sugestões aceitas
 
-Uma consulta anterior permaneceu no editor e provocou um erro de sintaxe
-relacionado ao `ORDER BY`:
+### Reconciliação dos valores dos itens
 
-``` text
-SQL state: 42601
-```
+- **Tarefa delegada:**
+  Orientação para verificar se os valores calculados na origem correspondiam aos valores persistidos no destino.
 
-Resolvi o problema removendo a consulta anterior antes de executar o
-novo SQL. Na validação de vendas, comparei a soma mensal com o total
-geral: ambos resultaram em R\$ 311.228,75, com diferença de R\$ 0,00.
+- **Trecho pedido:**
+  Comparação entre a soma de quantidade × preço unitário na origem e no destino.
+  
+- **Decisão e justificativa:**
+  Implementou a reconciliação com tolerância de um centavo
 
-#### Carga no PostgreSQL
+- **Como validei:**
+  Executei a transformação e verificou a diferença entre os valores.
 
-Inicialmente, utilizei `to_sql` com `if_exists="append"`. A primeira
-execução inseriu os produtos, mas a segunda apresentou erro de chave
-primária duplicada. Adotei `ON CONFLICT DO NOTHING` para ignorar
-registros com chave já existente, sem atualizar os dados previamente
-carregados.
+- **Retrabalho:**
+  N/A
 
-#### Ambiente de testes
 
-O comando `python -m pytest` apresentou `No module named pytest` porque
-o terminal utilizava um interpretador Python sem o pacote instalado. A
-validação final deve ser feita com o ambiente virtual do projeto ativo e
-o `pytest` instalado nele.
+## 2. Sugestões rejeitadas
 
-#### Organização do código de transformação
 
-Durante a revisão das funções A1--A6, os testes identificaram:
+### Cálculo do total dos itens dos pedidos
 
-``` text
-NameError: name 'A1' is not defined
-```
+- **Tarefa delegada:** Calcular o valor total dos itens de cada pedido.
+- **O que a IA propôs:** Adicionar uma coluna total diretamente ao DataFrame df_itens.
+- **Por que estava inadequada (com evidência):** Essa alteração poderia gerar incompatibilidade na etapa de carga, pois a tabela itens_pedido do banco não possui essa coluna no schema.sql.
+- **O que fiz no lugar:** Criei uma cópia do DataFrame para adicionar a coluna total, utilizando-a apenas nos cálculos de reconciliação, sem alterar a estrutura dos dados destinados à carga.
+- **Como validei:** Executei a transformação e conferi os valores calculados, preservando a estrutura esperada pelo banco de dados.
 
-O identificador de uma seção estava sem `#` e foi interpretado como
-código Python. Após corrigir o comentário, executei novamente os testes.
+---
 
-### 5.5 Evidências de validação
+## 3. Falhas e retrabalho
 
-  Verificação                         Resultado
-  ----------------------------------- --------------------------------------
-  Pedidos duplicados removidos        100
-  Pedidos divergentes identificados   238
-  Pedidos carregados                  5.000
-  Reconciliação financeira            Diferença de R\$ 0,00
-  Idempotência da carga               Quantidades mantidas após reexecução
-  Suíte de testes                     8 testes aprovados
+### Chaves estrangeiras invertidas na conversão do brModelo (rascunho: reescrever com minhas palavras)
 
-**Decisão sobre arquivo adicional:**
+- **Contexto:** Pedi para validar a modelagem modelagem do banco que eu estava modelando no brModelo.
 
-> Eu não vou criar um arquivo novo somente para o A6; vou fazer a
-> validação no conjunto de testes.
+- **O que a IA orientou:** Na modelegaem de dados, ela recomendou alterar a cardinalidades na notação ((0,n) para clientes e (1,1)
+  para pedidos), dizendo que estavam corretas.
 
-**Erro encontrado no pgAdmin:**
+- **O que estava errado:** ao converter para o modelo lógico, o brModelo criou as chaves
+  estrangeiras nas tabelas pai, apontando para as filhas (por exemplo, `pedido_id` dentro
+  de `clientes`).
 
-``` text
-ERROR: erro de sintaxe em ou próximo a "ORDER"
-SQL state: 42601
-```
+- **Como encontrei:** ao abrir o diagrama lógico e ver as colunas `fk_itens_pedido_*` em
+  `pedidos` e `produtos`.
 
-**Resultados registrados do pytest:** - Antes do teste do relatório de
-qualidade: `7 passed`. - Suíte completa, incluindo o teste do relatório
-de qualidade: `8 passed`.
+- **Retrabalho:** apaguei as colunas erradas, recriei as chaves estrangeiras nas tabelas
+  filhas e corrigi os tipos (`cliente_id` estava como VARCHAR).
 
-### 5.6 Stretch 3 --- Relatório de Qualidade
 
-**Objetivo:** gerar um relatório automático com data, hora e contadores
-das seis regras A1--A6.
+## 4. Conclusão
 
-**Sugestão da IA:** criar `etl/relatorio_qualidade.py`, gerar arquivos
-`.txt` com `datetime` e `pathlib` e integrar a geração ao `pipeline.py`
-após a carga.
+O uso da IA foi importante durante o desenvolvimento do desafio, principalmente para esclarecer conceitos, analisar problemas e apoiar a implementação das etapas do ETL. Porém, procurei compreender cada sugestão antes de aplicá-la, avaliando sua compatibilidade com a estrutura do projeto e o contrato de dados.
 
-**Decisão:** aceitei o módulo separado e a geração de um arquivo por
-execução. A pasta `relatorios/` foi adicionada ao `.gitignore` para não
-versionar arquivos gerados automaticamente.
+Também optei por não aceitar sugestões que poderiam comprometer etapas posteriores, como a carga no banco de dados. Esse processo reforçou a importância de testar, validar e entender o código produzido.
 
-**Validação:** verifiquei a sintaxe com `py_compile`, gerei um relatório
-com dados fictícios e conferi seu conteúdo. Na execução com dados reais,
-confirmei: A1 = 81, A2 = 151, A3 = 6.000, A4 = 17.467, A5 = 100 e A6 =
-238. Depois, executei a suíte completa, obtendo 8 testes aprovados.
-
-**Limitação identificada:** A4 contabiliza os campos monetários
-preparados para carga, e não necessariamente cada chamada da função de
-conversão.
-
-### 5.7 Conclusão sobre o uso de IA
-
-A IA contribuiu para esclarecer dúvidas, sugerir soluções pontuais e
-investigar erros. Algumas sugestões foram adaptadas e outras rejeitadas
-após avaliar sua necessidade e adequação. Executar os comandos, corrigir
-problemas e validar resultados foi fundamental para compreender o ETL e
-garantir a consistência dos dados.
-
-## 6. Reflexão sobre o desenvolvimento
-
-### 6.1 Qual foi a decisão mais difícil do ETL e por quê?
-
-Minha maior dificuldade foi organizar o projeto e compreender como cada
-etapa se conectava. Como ainda estou aprendendo, tive dúvidas sobre a
-estrutura dos arquivos, a configuração do ambiente e a ordem das
-atividades. Desenvolver aos poucos e testar cada etapa antes de avançar
-me ajudou a compreender melhor o funcionamento do ETL.
-
-### 6.2 O que você delegou à IA e o que fez questão de fazer sozinho?
-
-Utilizei a IA para esclarecer dúvidas, entender requisitos e receber
-orientações sobre a organização do projeto. Também pedi apoio em funções
-específicas, testes e investigação de erros. Fiz questão de executar os
-comandos, conferir os resultados e questionar sugestões que não faziam
-sentido ou apresentavam problemas.
-
-### 6.3 Se tivesse mais uma semana, o que mudaria primeiro?
-
-Dedicaria mais tempo para compreender cada etapa e revisar o código,
-identificando partes que poderiam ser simplificadas ou processos
-desnecessários. Meu objetivo seria deixar o ETL mais organizado, fácil
-de entender e manter, além de ampliar as validações e a documentação.
-
-## 7. Considerações finais
-
-Este desafio reforçou que Engenharia de Dados vai além de extrair,
-transformar e carregar informações. É necessário compreender o negócio,
-definir regras, validar resultados e garantir que os dados sejam
-confiáveis.
-
-A inteligência artificial foi uma ferramenta de apoio durante o
-desenvolvimento, mas compreender o código, executar as validações e
-assumir as decisões técnicas continuaram sendo minha responsabilidade.
+Mais do que utilizar a IA para escrever código, busquei utilizá-la como uma ferramenta de aprendizado, mantendo a responsabilidade pelas decisões técnicas e pela qualidade da solução desenvolvida.
