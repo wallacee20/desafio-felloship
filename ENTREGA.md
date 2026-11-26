@@ -37,7 +37,7 @@ contemplando:
 
 ## 4. Vídeo de demonstração
 
-**Link:** \[[inserir link público do vídeo](https://youtu.be/bYCw5qPCkhs)\]
+**Link:** \[[vídeo no youtube](https://youtu.be/bYCw5qPCkhs)\]
 
 O vídeo apresentará a estrutura do projeto, a execução do pipeline, os
 resultados no PostgreSQL, os testes e as verificações de reconciliação.
