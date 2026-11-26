@@ -33,7 +33,7 @@ contemplando:
 | Pedidos duplicados descartados    | 100       |
 | Pedidos com divergência financeira| 238       |
 | Diferença na reconciliação        | R$ 0,00   |
-| Testes automatizados aprovados    | 8         |
+| Testes automatizados aprovados    | 5         |
 
 ## 4. Vídeo de demonstração
 
@@ -107,7 +107,7 @@ Verificação dos resultados da reconciliação.**
 
 ## 3. Falhas e retrabalho
 
-### Chaves estrangeiras invertidas na conversão do brModelo (rascunho: reescrever com minhas palavras)
+### Chaves estrangeiras invertidas na conversão do brModelo
 
 - **Contexto:** Pedi para validar a modelagem modelagem do banco que eu estava modelando no brModelo.
 
