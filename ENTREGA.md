@@ -6,7 +6,7 @@
 
 **Branch de desenvolvimento:** `desafio-final-wallace`
 
-**Pull Request:** \[inserir link\]
+**Pull Request:** \[[inserir link](https://github.com/wallacee20/desafio-felloship/pull/1)\]
 
 ## 2. Resumo da implementação
 
