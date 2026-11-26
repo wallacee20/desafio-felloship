@@ -24,16 +24,16 @@ contemplando:
 
 ## 3. Resultados verificados
 
-  Indicador                              Resultado
-  ------------------------------------ -----------
-  Clientes carregados                        1.000
-  Produtos carregados                           12
-  Pedidos únicos carregados                  5.000
-  Itens de pedidos carregados               12.455
-  Pedidos duplicados descartados               100
-  Pedidos com divergência financeira           238
-  Diferença na reconciliação              R\$ 0,00
-  Testes automatizados aprovados                 8
+  | Indicador                         | Resultado |
+|-----------------------------------|----------:|
+| Clientes carregados               | 1.000     |
+| Produtos carregados               | 12        |
+| Pedidos únicos carregados         | 5.000     |
+| Itens de pedidos carregados       | 12.455    |
+| Pedidos duplicados descartados    | 100       |
+| Pedidos com divergência financeira| 238       |
+| Diferença na reconciliação        | R$ 0,00   |
+| Testes automatizados aprovados    | 8         |
 
 ## 4. Vídeo de demonstração
 
